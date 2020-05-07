@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        body {
+            height: 100vh;
+        }
+
+        div {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: red;
+            position: absolute;
+            background-size: 100% 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        // id选择器
+        function $(id) {
+            return document.getElementById(id);
+        }
+        // 球的数量
+        let ballCount = 0
+        // body鼠标按下事件
+        let body = document.querySelector('body');
+
+        body.onmousedown = function (ev) {
+            let div = document.createElement('div')
+            div.setAttribute("id", "ball" + ballCount);
+            ballCount++
+            body.appendChild(div)
+            //event的兼容性
+            //获取鼠标按下的坐标
+            let x1 = ev.clientX;
+            let y1 = ev.clientY;
+            div.style.top = y1 + 'px';
+            div.style.left = x1 + 'px';
+            // //获取元素的left，top值
+            let l = div.offsetLeft;
+            let t = div.offsetTop;
+
+            //给可视区域添加鼠标的移动事件
+            document.onmousemove = function (ev) {
+                //event的兼容性
+                let eve = ev || event;
+                //获取鼠标移动时的坐标
+                let x2 = eve.clientX;
+                let y2 = eve.clientY;
+                //计算出鼠标的移动距离
+                let x = x2 - x1;
+                let y = y2 - y1;
+                //移动的数值与元素的left，top相加，得出元素的移动的距离
+                let lt = y + t;
+                let ls = x + l;
+                //更改元素的left，top值
+                div.style.top = lt + 'px';
+                div.style.left = ls + 'px';
+            }
+
+
+            document.onmouseup = function (ev) {
+                document.onmousemove = null;
+                let eve = ev || event;
+                //获取鼠标移动时的坐标
+                let x2 = eve.clientX;
+                let y2 = eve.clientY;
+                //计算出鼠标的移动距离
+                let x = x2 - x1;
+                let y = y2 - y1;
+                let speedX = 6, speedY = -16;
+                let totalH = document.body.clientHeight;
+                let totalW = document.body.clientWidth;
+                let timer = setInterval(function () {
+                    div.style.top = div.offsetTop + y + 'px';
+                    div.style.left = div.offsetLeft + x + 'px';
+                    let maxH = totalH - div.offsetHeight;
+                    let maxW = totalW - div.offsetWidth;
+                    // 当小球在屏幕之外时
+                    if (div.offsetTop > maxH || div.offsetTop <= 0) {
+                        y *= -0.9;
+                        if (Math.abs(y) <= 1) {
+                            div.style.top = maxH - y + 'px';
+                            clearInterval(timer);
+                        }
+                    }
+                    if (div.offsetLeft >= maxW || div.offsetLeft <= 0) {
+                        x *= -0.9;
+                        if (Math.abs(x) <= 1) {
+                            div.style.left = div.offsetLeft + x + 'px';
+                        }
+                    }
+                    y++;
+                }, 20)
+            }
+        }
+    </script>
+</body>
+
+</html>
